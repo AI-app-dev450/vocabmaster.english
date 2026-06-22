@@ -1,0 +1,73 @@
+import { Routes, Route } from 'react-router';
+import { createContext, useContext } from 'react';
+import { useVocabulary } from '@/hooks/useVocabulary';
+import { useToast } from '@/hooks/useToast';
+import { Sidebar } from '@/components/Sidebar';
+import { MobileNav } from '@/components/MobileNav';
+import { ToastContainer } from '@/components/ToastContainer';
+import { Dashboard } from '@/pages/Dashboard';
+import { WordList } from '@/pages/WordList';
+import { StudyLayout } from '@/pages/StudyLayout';
+import { Flashcards } from '@/pages/Flashcards';
+import { Quiz } from '@/pages/Quiz';
+import { Matching } from '@/pages/Matching';
+import { Spelling } from '@/pages/Spelling';
+import { Settings } from '@/pages/Settings';
+import { Profile } from '@/pages/Profile';
+
+
+interface AppContextType {
+  vocabulary: ReturnType<typeof useVocabulary>;
+  addToast: (message: string, type?: 'success' | 'error' | 'info' | 'warning') => string;
+}
+
+export const AppContext = createContext<AppContextType | null>(null);
+
+export function useApp() {
+  const context = useContext(AppContext);
+  if (!context) throw new Error('useApp must be used within AppProvider');
+  return context;
+}
+
+export default function App() {
+  const vocabulary = useVocabulary();
+  const { toasts, addToast, removeToast } = useToast();
+
+  return (
+    <AppContext.Provider value={{ vocabulary, addToast }}>
+      <div className="flex h-screen w-screen overflow-hidden bg-[#F5F5F0] dot-grid-bg">
+        {/* Desktop Sidebar */}
+        <div className="sidebar-desktop hidden md:block">
+          <Sidebar
+            profile={vocabulary.profile}
+            currentStreak={vocabulary.profile.currentStreak}
+          />
+        </div>
+
+        {/* Main Content */}
+        <main className="flex-1 overflow-y-auto main-content">
+          <div className="mx-auto max-w-[960px] px-4 py-6 md:px-8 md:py-8">
+            <Routes>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/words" element={<WordList />} />
+              <Route path="/study" element={<StudyLayout />}>
+                <Route path="flashcards" element={<Flashcards />} />
+                <Route path="quiz" element={<Quiz />} />
+                <Route path="matching" element={<Matching />} />
+                <Route path="spelling" element={<Spelling />} />
+              </Route>
+              <Route path="/settings" element={<Settings />} />
+              <Route path="/profile" element={<Profile />} />
+            </Routes>
+          </div>
+        </main>
+
+        {/* Mobile Bottom Navigation */}
+        <MobileNav />
+
+        {/* Toast Notifications */}
+        <ToastContainer toasts={toasts} onRemove={removeToast} />
+      </div>
+    </AppContext.Provider>
+  );
+}
