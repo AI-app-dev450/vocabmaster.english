@@ -33,7 +33,7 @@ export function Sidebar({ profile, currentStreak }: SidebarProps) {
     <aside className="flex h-full w-[200px] flex-col bg-[#1A1A2E] text-white">
       {/* Logo */}
       <div className="flex items-center px-5 py-6">
-        <span className="text-xl font-bold tracking-tight">Lexicon</span>
+        <span className="text-xl font-bold tracking-tight">Master of English</span>
         <span className="ml-0.5 h-1.5 w-1.5 rounded-full bg-[#F5A623]"></span>
       </div>
 
